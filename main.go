@@ -1,17 +1,17 @@
 package main
 
 import (
+	"Chatting/api"
 	"Chatting/config"
-	"Chatting/controller"
-	"Chatting/handler"
 	"Chatting/routes"
 	"Chatting/utils"
 	"fmt"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"net/http"
 )
 
-var userController *controller.UserController
+var userController *api.UserController
 
 
 // @title Golang CHATTING REST API
@@ -30,12 +30,16 @@ var userController *controller.UserController
 // @BasePath /api/v1
 func main() {
 	e := echo.New()
-	e.HTTPErrorHandler = handler.ErrorHandler
+	e.HTTPErrorHandler = api.ErrorHandler
+
+	//middleware
 	e.Validator = utils.NewValidationUtil()
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 	config.CORSConfig(e)
 
 
-	routes.GetPostApiRoutes(e, userController)
+	routes.GetUserApiRoutes(e, userController)
 	routes.GetSwaggerRoutes(e)
 
 

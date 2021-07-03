@@ -22,7 +22,6 @@ func BindAndValidate(c echo.Context, i interface{}) error {
 	if err := c.Bind(i); err != nil {
 		return exception.BadRequestException(err.Error())
 	}
-
 	if err := c.Validate(i); err != nil {
 		return exception.BadRequestException(err.Error())
 	}
