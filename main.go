@@ -8,11 +8,10 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"net/http"
 )
 
 var userController *api.UserController
-
+var postController *api.PostController
 
 // @title Golang CHATTING REST API
 // @version 1.0
@@ -40,22 +39,8 @@ func main() {
 
 
 	routes.GetUserApiRoutes(e, userController)
+	routes.GetPostApiRoutes(e, postController)
 	routes.GetSwaggerRoutes(e)
 
-
 	e.Logger.Fatal(	e.Start(fmt.Sprintf(":%s",config.ServerPort.(string))))
-}
-
-// HealthCheck godoc
-// @Summary Show the status of server.
-// @Description get the status of server.
-// @Tags root
-// @Accept */*
-// @Produce json
-// @Success 200 {object} map[string]interface{}
-// @Router / [get]
-func HealthCheck(c echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": "Server is up and running",
-	})
 }
