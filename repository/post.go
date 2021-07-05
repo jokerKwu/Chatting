@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"Chatting/config"
 	m "Chatting/model"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
@@ -22,7 +21,7 @@ type PostRepository interface{
 type Posts []m.Post
 
 func GetAllPost(client *mongo.Client, filter bson.M) (Posts, error){
-	ctx, cancel := context.WithTimeout(context.Background(),config.ConnectTime.(time.Duration))
+	ctx, cancel := context.WithTimeout(context.Background(),time.Minute * 5)
 	defer cancel()
 	collection := client.Database("webboard").Collection("posts")
 	cur, err := collection.Find(ctx, filter)
@@ -43,8 +42,9 @@ func GetAllPost(client *mongo.Client, filter bson.M) (Posts, error){
 	return posts, nil
 }
 func SavePost(client *mongo.Client, post m.Post)(interface{}, error){
-	ctx, cancel := context.WithTimeout(context.Background(),config.ConnectTime.(time.Duration))
+	ctx, cancel := context.WithTimeout(context.Background(),time.Minute * 5)
 	defer cancel()
+	log.Println("여기 들어옴?")
 	collection := client.Database("webboard").Collection("posts")
 	insertResult, err := collection.InsertOne(ctx, post)
 	if err != nil{
@@ -54,11 +54,11 @@ func SavePost(client *mongo.Client, post m.Post)(interface{}, error){
 	return insertResult.InsertedID, nil
 }
 func GetOnePost(client *mongo.Client, filter bson.M)(m.Post, error){
-	ctx, cancel := context.WithTimeout(context.Background(),config.ConnectTime.(time.Duration))
+	ctx, cancel := context.WithTimeout(context.Background(),time.Minute * 5)
 	defer cancel()
+	var post m.Post
 	collection := client.Database("webboard").Collection("posts")
 	postReturned := collection.FindOne(ctx, filter)
-	var post m.Post
 	if err := postReturned.Decode(&post); err != nil{
 		log.Println("Error retrieving post")
 		return m.Post{}, err
@@ -66,7 +66,7 @@ func GetOnePost(client *mongo.Client, filter bson.M)(m.Post, error){
 	return post, nil
 }
 func UpdatePost(client *mongo.Client, updateData interface{}, filter bson.M) (int64, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), config.ConnectTime.(time.Duration))
+	ctx, cancel := context.WithTimeout(context.Background(),time.Minute * 5)
 	defer cancel()
 	collection := client.Database("webboard").Collection("posts")
 	updateQuery:= bson.D{{Key:"$set",Value:updateData}}
@@ -78,7 +78,7 @@ func UpdatePost(client *mongo.Client, updateData interface{}, filter bson.M) (in
 	return updateResult.ModifiedCount, nil
 }
 func DeletePost(client *mongo.Client, filter bson.M)(int64, error){
-	ctx, cancel := context.WithTimeout(context.Background(),config.ConnectTime.(time.Duration))
+	ctx, cancel := context.WithTimeout(context.Background(),time.Minute * 5)
 	defer cancel()
 	collection := client.Database("webboard").Collection("posts")
 	deleteResult, err := collection.DeleteOne(ctx, filter)

@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type PostController struct{
@@ -25,10 +26,10 @@ type PostController struct{
 // @Success 200 {array} model.Post
 // @Failure 500 {object} handler.APIError
 // @Router /posts [get]
-func (PostController *PostController) GetAllPost(c echo.Context) error{
+func (postController *PostController) GetAllPost(c echo.Context) error{
 	mdb, _ := config.MongoConnection()
-	posts, _ := PostController.postRepository.GetAllPost(mdb, bson.M{})
-	return utils.Negotiate(c,http.StatusOK, posts)
+	posts, _ := repository.GetAllPost(mdb, bson.M{})
+	return c.JSON(http.StatusOK,posts)
 }
 
 // SavePost godoc
@@ -44,18 +45,18 @@ func (PostController *PostController) GetAllPost(c echo.Context) error{
 // @Failure 500 {object} handler.APIError
 // @Router /posts [post]
 func (postController *PostController) SavePost(c echo.Context) error {
-	payload := new(model.PostInput)
+	payload := new(model.Post)
 	if err := utils.BindAndValidate(c, payload); err != nil {
 		return err
 	}
 	var post model.Post
-	post.PostInput = payload
+	post = *payload
 	mdb, _ := config.MongoConnection()
-	createdPost, err := postController.postRepository.SavePost(mdb, post)
+	createdPost, err := repository.SavePost(mdb, post)
 	if err != nil {
 		return err
 	}
-	return utils.Negotiate(c, http.StatusCreated, createdPost)
+	return c.JSON(http.StatusCreated,createdPost)
 }
 
 // GetPost godoc
@@ -73,12 +74,12 @@ func (postController *PostController) SavePost(c echo.Context) error {
 func (postController *PostController) GetPost(c echo.Context) error {
 
 	mdb, _ := config.MongoConnection()
-	id := c.Param("id")
-	post, err := postController.postRepository.GetOnePost(mdb, bson.M{"id":id})
+	id,_ := strconv.Atoi(c.Param("id"))
+	post, err := repository.GetOnePost(mdb, bson.M{"id":id})
 	if err != nil {
 		return err
 	}
-	return utils.Negotiate(c, http.StatusOK, post)
+	return c.JSON(http.StatusOK,post)
 }
 
 // UpdatePost godoc
@@ -103,11 +104,11 @@ func (postController *PostController) UpdatePost(c echo.Context) error {
 	}
 	mdb, _ := config.MongoConnection()
 	id := c.Param("id")
-	user, err := postController.postRepository.UpdatePost(mdb,post,bson.M{"id":id})
+	updateCnt, err := repository.UpdatePost(mdb,post,bson.M{"id":id})
 	if err != nil {
 		return err
 	}
-	return utils.Negotiate(c, http.StatusOK, user)
+	return c.JSON(http.StatusOK,updateCnt)
 }
 
 // DeletePost godoc
@@ -123,10 +124,10 @@ func (postController *PostController) UpdatePost(c echo.Context) error {
 // @Failure 500 {object} handler.APIError
 // @Router /posts/{id} [delete]
 func (postController *PostController) DeletePost(c echo.Context) error {
-	id := c.Param("id")
+	id,_ := strconv.Atoi(c.Param("id"))
 	mdb, _ := config.MongoConnection()
 
-	err := postController.postRepository.DeletePost(mdb,bson.M{"id":id})
+	_,err := repository.DeletePost(mdb,bson.M{"id":id})
 	if err != nil {
 		return err
 	}

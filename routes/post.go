@@ -6,12 +6,12 @@ import (
 )
 
 func GetPostApiRoutes(e *echo.Echo, postController *api.PostController){
-	v1 := e.Group("/api/v1")
+	v1 := e.Group("/api/v1/posts")
 	{
-		v1.GET("/posts",postController.GetAllPost)
-		v1.GET("/posts:id",postController.GetPost)
-		v1.POST("/posts",postController.SavePost)
-		v1.DELETE("/posts:id",postController.UpdatePost)
-		v1.PUT("/posts:id",postController.UpdatePost)
+		v1.GET("",postController.GetAllPost)
+		v1.GET("/:id",postController.GetPost)
+		v1.POST("",postController.SavePost)
+		v1.DELETE("/:id",postController.DeletePost)
+		v1.PUT("/:id",postController.UpdatePost)
 	}
 }
