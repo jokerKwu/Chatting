@@ -46,9 +46,6 @@ func (UserController *UserController) PostLoginUser(c echo.Context) error{
 		return err
 	}
 
-	log.Println("test ======================")
-	log.Println(c.Cookie("access_token"))
-	log.Println(c.Cookie("refresh_token"))
 	return c.JSON(http.StatusOK,bson.M{"access_token":accessToken,"refresh_token":refreshToken})
 }
 // PostUser godoc
