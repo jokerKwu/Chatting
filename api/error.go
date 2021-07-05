@@ -1,7 +1,6 @@
 package api
 
 import (
-	"Chatting/utils"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"time"
@@ -46,7 +45,7 @@ func ErrorHandler(err error, c echo.Context) {
 		if c.Request().Method == http.MethodHead { // Issue #608
 			err = c.NoContent(code)
 		} else {
-			utils.Negotiate(c, code, message)
+			c.JSON(code,message)
 		}
 		if err != nil {
 			c.Logger().Error(err)

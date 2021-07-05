@@ -4,18 +4,27 @@ import (
 	"Chatting/exception"
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
+	"net/http"
 )
 
-type ValidationUtil struct {
-	validator *validator.Validate
+var Val = validator.New()
+
+type CustomValidator struct{
+	Validator *validator.Validate
 }
 
-func NewValidationUtil() echo.Validator {
-	return &ValidationUtil{validator: validator.New()}
+func (cv *CustomValidator) Validate(i interface{}) error{
+	if err := cv.Validator.Struct(i); err != nil{
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	return nil
 }
 
-func (v *ValidationUtil) Validate(i interface{}) error {
-	return v.validator.Struct(i)
+func Validate(i interface{}) error {
+	if err := Val.Struct(i); err != nil{
+		return err
+	}
+	return nil
 }
 
 func BindAndValidate(c echo.Context, i interface{}) error {

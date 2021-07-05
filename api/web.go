@@ -6,5 +6,5 @@ import (
 )
 
 func RedirectIndexPage(c echo.Context) error {
-	return c.Redirect(http.StatusMovedPermanently, "/api/index.html")
+	return c.Redirect(http.StatusMovedPermanently, "/api/v1/index.html")
 }

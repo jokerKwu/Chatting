@@ -7,6 +7,6 @@ import (
 )
 
 func GetSwaggerRoutes(e *echo.Echo){
-	e.GET("/api", api.RedirectIndexPage)
-	e.GET("/api/*",echoSwagger.WrapHandler)
+	e.GET("/api/v1", api.RedirectIndexPage)
+	e.GET("/api/v1/*",echoSwagger.WrapHandler)
 }

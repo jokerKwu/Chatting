@@ -1,76 +1,58 @@
 package api
 
 import (
+	"Chatting/config"
 	"Chatting/model"
 	"Chatting/repository"
 	"Chatting/utils"
 	"github.com/labstack/echo/v4"
+	"go.mongodb.org/mongo-driver/bson"
+	"log"
 	"net/http"
-	"strconv"
 )
 
 type UserController struct {
 	userRepository repository.UserRepository
 }
-
 func NewUserController(userRepository repository.UserRepository) *UserController {
 	return &UserController{userRepository: userRepository}
 }
+func (UserController *UserController) GetLoginUser(c echo.Context) error{
+	ctx := utils.CtxGenerate(c.Request(),"","")
+	payload := new(model.User)
+	if err := utils.BindAndValidate(c, payload); err != nil{
+		return err
+	}
+	mdb, _ := config.MongoConnection()
+	dbUser, err := repository.GetOneUser(mdb,bson.M{"name":payload.Name})
 
-func (userController *UserController) GetAllUser(c echo.Context) error {
-	page, _ := strconv.ParseInt(c.QueryParam("page"), 10, 64)
-	limit, _ := strconv.ParseInt(c.QueryParam("limit"), 10, 64)
+	//User 정보가 일치하는지 체크
+	if dbUser.Name != payload.Name || dbUser.Password != payload.Password{
+		log.Println("User Info different")
+		return err
+	}
+	accessToken, refreshToken, _, err := utils.GenerateTokenPair(ctx,utils.TokenData{Name:payload.Name})
+	if err != nil{
+		return err
+	}
 
-	pagedUser, _ := userController.userRepository.GetAllUser(page, limit)
-	return utils.Negotiate(c, http.StatusOK, pagedUser)
+	log.Println("test ======================")
+	log.Println(c.Cookie("access_token"))
+	log.Println(c.Cookie("refresh_token"))
+	return c.JSON(http.StatusOK,bson.M{"access_token":accessToken,"refresh_token":refreshToken})
 }
-func (userController *UserController) SaveUser(c echo.Context) error {
-	payload := new(model.UserInput)
-	if err := utils.BindAndValidate(c, payload); err != nil {
+func(UserController *UserController) PostUser(c echo.Context) error{
+	payload := new(model.User)
+	if err := utils.BindAndValidate(c, payload) ; err != nil{
 		return err
 	}
-
-	createdUser, err := userController.userRepository.SaveUser(&model.User{UserInput: payload})
-	if err != nil {
+	var user model.User
+	user = *payload
+	mdb, _ := config.MongoConnection()
+	log.Println(user.Name, user.Password)
+	createdUser, err := repository.PostUser(mdb,&user)
+	if err != nil{
 		return err
 	}
-
-	return utils.Negotiate(c, http.StatusCreated, createdUser)
-}
-
-func (userController *UserController) GetUser(c echo.Context) error {
-	id := c.Param("id")
-
-	user, err := userController.userRepository.GetUser(id)
-	if err != nil {
-		return err
-	}
-
-	return utils.Negotiate(c, http.StatusOK, user)
-}
-
-func (userController *UserController) UpdateUser(c echo.Context) error {
-	id := c.Param("id")
-
-	payload := new(model.UserInput)
-
-	if err := utils.BindAndValidate(c, payload); err != nil {
-		return err
-	}
-
-	user, err := userController.userRepository.UpdateUser(id, &model.User{UserInput: payload})
-	if err != nil {
-		return err
-	}
-	return utils.Negotiate(c, http.StatusOK, user)
-}
-
-func (userController *UserController) DeleteUser(c echo.Context) error {
-	id := c.Param("id")
-
-	err := userController.userRepository.DeleteUser(id)
-	if err != nil {
-		return err
-	}
-	return c.NoContent(http.StatusNoContent)
+	return c.JSON(http.StatusCreated,createdUser)
 }

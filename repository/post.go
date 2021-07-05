@@ -42,9 +42,8 @@ func GetAllPost(client *mongo.Client, filter bson.M) (Posts, error){
 	return posts, nil
 }
 func SavePost(client *mongo.Client, post m.Post)(interface{}, error){
-	ctx, cancel := context.WithTimeout(context.Background(),time.Minute * 5)
+	ctx, cancel := context.WithTimeout(context.Background(),time.Minute *5)
 	defer cancel()
-	log.Println("여기 들어옴?")
 	collection := client.Database("webboard").Collection("posts")
 	insertResult, err := collection.InsertOne(ctx, post)
 	if err != nil{
