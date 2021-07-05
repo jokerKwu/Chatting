@@ -17,7 +17,17 @@ type UserController struct {
 func NewUserController(userRepository repository.UserRepository) *UserController {
 	return &UserController{userRepository: userRepository}
 }
-func (UserController *UserController) GetLoginUser(c echo.Context) error{
+// PostLoginUser godoc
+// @Summary User Login
+// @Description User login
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param name body model.User true "User Info"
+// @Success 200 {object} model.User
+// @Failure 500 {object} api.APIError
+// @Router /login [post]
+func (UserController *UserController) PostLoginUser(c echo.Context) error{
 	ctx := utils.CtxGenerate(c.Request(),"","")
 	payload := new(model.User)
 	if err := utils.BindAndValidate(c, payload); err != nil{
@@ -41,6 +51,16 @@ func (UserController *UserController) GetLoginUser(c echo.Context) error{
 	log.Println(c.Cookie("refresh_token"))
 	return c.JSON(http.StatusOK,bson.M{"access_token":accessToken,"refresh_token":refreshToken})
 }
+// PostUser godoc
+// @Summary Post User
+// @Description user Save
+// @Param user body model.User true "user info"
+// @Tags users
+// @Accept json
+// @Produce json
+// @Success 200 {object} model.User
+// @Failure 500 {object} api.APIError
+// @Router /join [post]
 func(UserController *UserController) PostUser(c echo.Context) error{
 	payload := new(model.User)
 	if err := utils.BindAndValidate(c, payload) ; err != nil{

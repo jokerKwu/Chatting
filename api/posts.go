@@ -20,6 +20,7 @@ type PostController struct{
 // @Summary Get all Posts
 // @Description post get All
 // @Tags posts
+// @Param access_token header string true "access_token"
 // @Accept json
 // @Produce json
 // @Success 200 {array}	model.Post
@@ -35,6 +36,7 @@ func (postController *PostController) GetAllPost(c echo.Context) error{
 // @Description save post
 // @Tags posts
 // @Param post body model.Post true "post Info"
+// @Param access_token header string true "access_token"
 // @Accept json
 // @Produce json
 // @Success 201 {object} model.Post
@@ -60,6 +62,7 @@ func (postController *PostController) SavePost(c echo.Context) error {
 // @Description Get one post
 // @Tags posts
 // @Param id path int true "Post ID"
+// @Param access_token header string true "access_token"
 // @Accept json
 // @Produce json
 // @Success 200 {object} model.Post
@@ -84,6 +87,7 @@ func (postController *PostController) GetPost(c echo.Context) error {
 // @Tags posts
 // @Param id path int true "Post ID"
 // @Param post body model.Post true "post Info"
+// @Param access_token header string true "access_token"
 // @Accept json
 // @Produce json
 // @Success 200 {object} model.Post
@@ -109,6 +113,7 @@ func (postController *PostController) UpdatePost(c echo.Context) error {
 // @Description Delete post
 // @Tags posts
 // @Param id path int true "Post ID"
+// @Param access_token header string true "access_token"
 // @Accept json
 // @Produce json
 // @Success 200 {object} model.Post

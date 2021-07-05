@@ -29,17 +29,85 @@ definitions:
     - id
     - title
     type: object
+  model.User:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+    required:
+    - name
+    - password
+    type: object
 host: localhost:8080
 info:
   contact: {}
   title: Golang CHATTING REST API
   version: "1.0"
 paths:
+  /join:
+    post:
+      consumes:
+      - application/json
+      description: user Save
+      parameters:
+      - description: user info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.APIError'
+      summary: Post User
+      tags:
+      - users
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: User login
+      parameters:
+      - description: User Info
+        in: body
+        name: name
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.APIError'
+      summary: User Login
+      tags:
+      - users
   /posts:
     get:
       consumes:
       - application/json
       description: post get All
+      parameters:
+      - description: access_token
+        in: header
+        name: access_token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -67,6 +135,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/model.Post'
+      - description: access_token
+        in: header
+        name: access_token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -92,6 +165,11 @@ paths:
         name: id
         required: true
         type: integer
+      - description: access_token
+        in: header
+        name: access_token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -116,6 +194,11 @@ paths:
         name: id
         required: true
         type: integer
+      - description: access_token
+        in: header
+        name: access_token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -154,6 +237,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/model.Post'
+      - description: access_token
+        in: header
+        name: access_token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
