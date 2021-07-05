@@ -18,134 +18,63 @@ var doc = `{
     "info": {
         "description": "{{.Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "http://swagger.io/terms/",
-        "contact": {
-            "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
-        },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
+        "contact": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/": {
+        "/posts": {
             "get": {
-                "description": "get the status of server.",
+                "description": "post get All",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "root"
+                    "posts"
                 ],
-                "summary": "Show the status of server.",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
-        "/users": {
-            "get": {
-                "description": "Get all user items",
-                "consumes": [
-                    "application/json",
-                    "text/xml"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Get all users",
-                "parameters": [
-                    {
-                        "enum": [
-                            "xml",
-                            "json"
-                        ],
-                        "type": "string",
-                        "description": "mediaType",
-                        "name": "mediaType",
-                        "in": "query"
-                    },
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "description": "page",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "description": "size",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
+                "summary": "Get all Posts",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.User"
+                                "$ref": "#/definitions/model.Post"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handler.APIError"
+                            "$ref": "#/definitions/api.APIError"
                         }
                     }
                 }
             },
             "post": {
-                "description": "Create a new user item",
+                "description": "save post",
                 "consumes": [
-                    "application/json",
-                    "text/xml"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "posts"
                 ],
-                "summary": "Create a user",
+                "summary": "Save Post",
                 "parameters": [
                     {
-                        "enum": [
-                            "json",
-                            "xml"
-                        ],
-                        "type": "string",
-                        "description": "mediaType",
-                        "name": "mediaType",
-                        "in": "query"
-                    },
-                    {
-                        "description": "New User",
-                        "name": "user",
+                        "description": "post Info",
+                        "name": "post",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.UserInput"
+                            "$ref": "#/definitions/model.Post"
                         }
                     }
                 ],
@@ -153,52 +82,35 @@ var doc = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/model.User"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handler.APIError"
+                            "$ref": "#/definitions/model.Post"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handler.APIError"
+                            "$ref": "#/definitions/api.APIError"
                         }
                     }
                 }
             }
         },
-        "/users/{id}": {
+        "/posts/{id}": {
             "get": {
-                "description": "Get a user item",
+                "description": "Get one post",
                 "consumes": [
-                    "application/json",
-                    "text/xml"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "posts"
                 ],
-                "summary": "Get a user",
+                "summary": "Get One Post",
                 "parameters": [
                     {
-                        "enum": [
-                            "json",
-                            "xml"
-                        ],
-                        "type": "string",
-                        "description": "mediaType",
-                        "name": "mediaType",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "User ID",
+                        "type": "integer",
+                        "description": "Post ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -208,140 +120,106 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.User"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/handler.APIError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handler.APIError"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Update a user item",
-                "consumes": [
-                    "application/json",
-                    "text/xml"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Update a user",
-                "parameters": [
-                    {
-                        "enum": [
-                            "json",
-                            "xml"
-                        ],
-                        "type": "string",
-                        "description": "mediaType",
-                        "name": "mediaType",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "User Info",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.UserInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.User"
+                            "$ref": "#/definitions/model.Post"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handler.APIError"
+                            "$ref": "#/definitions/api.APIError"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handler.APIError"
+                            "$ref": "#/definitions/api.APIError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handler.APIError"
+                            "$ref": "#/definitions/api.APIError"
                         }
                     }
                 }
             },
-            "delete": {
-                "description": "Delete a new user item",
+            "put": {
+                "description": "Update post",
                 "consumes": [
-                    "application/json",
-                    "text/xml"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "posts"
                 ],
-                "summary": "Delete a user",
+                "summary": "Update Post",
                 "parameters": [
                     {
-                        "enum": [
-                            "json",
-                            "xml"
-                        ],
-                        "type": "string",
-                        "description": "mediaType",
-                        "name": "mediaType",
-                        "in": "query"
+                        "type": "integer",
+                        "description": "Post ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "User ID",
+                        "description": "post Info",
+                        "name": "post",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Post"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Post"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete post",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts"
+                ],
+                "summary": "delete post",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Post ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "No Content",
+                    "200": {
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.User"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/handler.APIError"
+                            "$ref": "#/definitions/model.Post"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handler.APIError"
+                            "$ref": "#/definitions/api.APIError"
                         }
                     }
                 }
@@ -349,7 +227,7 @@ var doc = `{
         }
     },
     "definitions": {
-        "handler.APIError": {
+        "api.APIError": {
             "type": "object",
             "properties": {
                 "message": {
@@ -366,35 +244,28 @@ var doc = `{
                 }
             }
         },
-        "model.User": {
+        "model.Post": {
             "type": "object",
             "required": [
-                "email",
-                "name"
+                "author",
+                "content",
+                "id",
+                "title"
             ],
             "properties": {
-                "email": {
+                "author": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "date": {
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "integer"
                 },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.UserInput": {
-            "type": "object",
-            "required": [
-                "email",
-                "name"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "name": {
+                "title": {
                     "type": "string"
                 }
             }
@@ -418,7 +289,7 @@ var SwaggerInfo = swaggerInfo{
 	BasePath:    "/api/v1",
 	Schemes:     []string{},
 	Title:       "Golang CHATTING REST API",
-	Description: "This is a sample server server.",
+	Description: "",
 }
 
 type s struct{}

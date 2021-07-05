@@ -17,32 +17,28 @@ type PostController struct{
 }
 
 // GetAllPost godoc
-// @Summary Get all posts
-// @Description Get all user items
+// @Summary Get all Posts
+// @Description post get All
 // @Tags posts
-// @Accept json,xml
+// @Accept json
 // @Produce json
-// @Param mediaType query string false "mediaType" Enums(xml, json)
-// @Success 200 {array} model.Post
-// @Failure 500 {object} handler.APIError
+// @Success 200 {array}	model.Post
+// @Failure 500 {object} api.APIError
 // @Router /posts [get]
 func (postController *PostController) GetAllPost(c echo.Context) error{
 	mdb, _ := config.MongoConnection()
 	posts, _ := repository.GetAllPost(mdb, bson.M{})
 	return c.JSON(http.StatusOK,posts)
 }
-
 // SavePost godoc
-// @Summary Create a post
-// @Description Create a new post item
+// @Summary Save Post
+// @Description save post
 // @Tags posts
-// @Accept json,xml
+// @Param post body model.Post true "post Info"
+// @Accept json
 // @Produce json
-// @Param mediaType query string false "mediaType" Enums(json, xml)
-// @Param user body model.PostInput true "New Post"
-// @Success 201 {object} model.User
-// @Failure 400 {object} handler.APIError
-// @Failure 500 {object} handler.APIError
+// @Success 201 {object} model.Post
+// @Failure 500 {object} api.APIError
 // @Router /posts [post]
 func (postController *PostController) SavePost(c echo.Context) error {
 	payload := new(model.Post)
@@ -60,16 +56,16 @@ func (postController *PostController) SavePost(c echo.Context) error {
 }
 
 // GetPost godoc
-// @Summary Get a post
-// @Description Get a post item
+// @Summary Get One Post
+// @Description Get one post
 // @Tags posts
-// @Accept json,xml
+// @Param id path int true "Post ID"
+// @Accept json
 // @Produce json
-// @Param mediaType query string false "mediaType" Enums(json, xml)
-// @Param id path string true "Post ID"
 // @Success 200 {object} model.Post
-// @Failure 404 {object} handler.APIError
-// @Failure 500 {object} handler.APIError
+// @Failure 400 {object} api.APIError
+// @Failure 404 {object} api.APIError
+// @Failure 500 {object} api.APIError
 // @Router /posts/{id} [get]
 func (postController *PostController) GetPost(c echo.Context) error {
 
@@ -83,18 +79,15 @@ func (postController *PostController) GetPost(c echo.Context) error {
 }
 
 // UpdatePost godoc
-// @Summary Update a post
-// @Description Update a post item
+// @Summary Update Post
+// @Description Update post
 // @Tags posts
-// @Accept json,xml
+// @Param id path int true "Post ID"
+// @Param post body model.Post true "post Info"
+// @Accept json
 // @Produce json
-// @Param mediaType query string false "mediaType" Enums(json, xml)
-// @Param id path string true "Post ID"
-// @Param user body model.PostInput true "Post Info"
 // @Success 200 {object} model.Post
-// @Failure 400 {object} handler.APIError
-// @Failure 404 {object} handler.APIError
-// @Failure 500 {object} handler.APIError
+// @Failure 500 {object} api.APIError
 // @Router /posts/{id} [put]
 func (postController *PostController) UpdatePost(c echo.Context) error {
 	post := new(model.Post)
@@ -112,16 +105,14 @@ func (postController *PostController) UpdatePost(c echo.Context) error {
 }
 
 // DeletePost godoc
-// @Summary Delete a post
-// @Description Delete a new post item
+// @Summary delete post
+// @Description Delete post
 // @Tags posts
-// @Accept json,xml
+// @Param id path int true "Post ID"
+// @Accept json
 // @Produce json
-// @Param mediaType query string false "mediaType" Enums(json, xml)
-// @Param id path string true "Post ID"
-// @Success 204 {object} model.Post
-// @Failure 404 {object} handler.APIError
-// @Failure 500 {object} handler.APIError
+// @Success 200 {object} model.Post
+// @Failure 500 {object} api.APIError
 // @Router /posts/{id} [delete]
 func (postController *PostController) DeletePost(c echo.Context) error {
 	id,_ := strconv.Atoi(c.Param("id"))
@@ -131,7 +122,7 @@ func (postController *PostController) DeletePost(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.NoContent(http.StatusNoContent)
+	return c.JSON(http.StatusOK,true)
 }
 
 
